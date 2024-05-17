@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Library</string>
+    <string name="search_screen">Поиск</string>
+    <string name="admin_screen">Управление</string>
+    <string name="books_screen">Книги</string>
+    <string name="authors_screen">Авторы</string>
+    <string name="publishers_screen">Издательства</string>
+</resources>
