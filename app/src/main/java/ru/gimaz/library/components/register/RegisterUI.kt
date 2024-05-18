@@ -4,8 +4,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -62,8 +65,10 @@ fun Register(viewModel: RegisterViewModel) {
                         Modifier
                             .fillMaxSize(0.5f)
                             .padding(top = 30.dp)
-                            .align(Alignment.TopCenter))
+                            .align(Alignment.TopCenter)
+                    )
                 }
+
                 ProcessState.SUCCESS -> {
                     LaunchedEffect(key1 = Unit) {
                         viewModel.handleIntent(RegisterViewModel.Intent.RegisterSuccess)
@@ -107,15 +112,15 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isFirstRegister) {
-           item {
-               Text(
-                   text = "Происходит регистрация первого аккаунта. Данному аккаунту автоматически будут выданые права администратора",
-                   modifier = Modifier.padding(),
-                   textAlign = TextAlign.Center,
-                   style = MaterialTheme.typography.bodySmall
+            item {
+                Text(
+                    text = "Происходит регистрация первого аккаунта. Данному аккаунту автоматически будут выданые права администратора",
+                    modifier = Modifier.padding(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall
 
-               )
-           }
+                )
+            }
         }
         item {
             Box(modifier = Modifier.size(100.dp)) {
@@ -259,7 +264,8 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
                     Text(text = "Пароль")
                 },
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Password
                 ),
                 supportingText = {
                     if (requiredFields.contains(RegisterViewModel.RequiredField.PASSWORD)) {
@@ -273,36 +279,37 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
             )
         }
 
-       item {
-           OutlinedTextField(
-               value = confirmPassword, onValueChange = {
-                   viewModel.handleIntent(RegisterViewModel.Intent.ConfirmPasswordChanged(it))
-               },
-               singleLine = true,
-               label = {
-                   Text(text = "Повторите пароль")
-               },
-               keyboardOptions = KeyboardOptions(
-                   imeAction = ImeAction.Next
-               ),
-               supportingText = {
-                   if (requiredFields.contains(RegisterViewModel.RequiredField.PASSWORD)) {
-                       Text(
-                           modifier = Modifier.fillMaxWidth(),
-                           text = "Поле обязательно для заполнения",
-                           color = MaterialTheme.colorScheme.error
-                       )
-                   }
-                   if (!isPasswordCorrect) {
-                       Text(
-                           modifier = Modifier.fillMaxWidth(),
-                           text = "Пароли не совпадают",
-                           color = MaterialTheme.colorScheme.error
-                       )
-                   }
-               }
-           )
-       }
+        item {
+            OutlinedTextField(
+                value = confirmPassword, onValueChange = {
+                    viewModel.handleIntent(RegisterViewModel.Intent.ConfirmPasswordChanged(it))
+                },
+                singleLine = true,
+                label = {
+                    Text(text = "Повторите пароль")
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Password
+                ),
+                supportingText = {
+                    if (requiredFields.contains(RegisterViewModel.RequiredField.PASSWORD)) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Поле обязательно для заполнения",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    if (!isPasswordCorrect) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Пароли не совпадают",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            )
+        }
         item {
             OutlinedButton(
                 onClick = {
@@ -312,6 +319,9 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
             ) {
                 Text(text = "Зарегистрироваться")
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(300.dp))
         }
 
 

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.gimaz.library.BottomBar
 import ru.gimaz.library.db.Publisher
+import ru.gimaz.library.storage.UserStorage
 import ru.gimaz.library.ui.cards.PublisherCard
 
 @Composable
@@ -85,13 +86,17 @@ fun Publishers(viewModel: PublishersViewModel) {
                     }
                 }
             }
-            FloatingActionButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(15.dp),
-                onClick = { viewModel.handleIntent(PublishersViewModel.Intent.AddPublisher) },
-            ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+            UserStorage.user?.let {
+                if (it.isAdmin) {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(15.dp),
+                        onClick = { viewModel.handleIntent(PublishersViewModel.Intent.AddPublisher) },
+                    ) {
+                        Icon(Icons.Filled.Add, "Floating action button.")
+                    }
+                }
             }
         }
     }

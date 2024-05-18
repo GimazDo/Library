@@ -55,6 +55,8 @@ import ru.gimaz.library.components.loading.AppLoading
 import ru.gimaz.library.components.loading.AppLoadingViewModel
 import ru.gimaz.library.components.login.Login
 import ru.gimaz.library.components.login.LoginViewModel
+import ru.gimaz.library.components.profile.Profile
+import ru.gimaz.library.components.profile.ProfileViewModel
 import ru.gimaz.library.components.publisher.Publisher
 import ru.gimaz.library.components.publisher.PublisherViewModel
 import ru.gimaz.library.components.publishers.Publishers
@@ -77,7 +79,7 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val navController = rememberNavController()
                 val db = remember {
-                    AppDatabase.getInstance(context, CoroutineScope(Dispatchers.IO))
+                    AppDatabase.getInstance(context)
                 }
                 Surface {
                     NavHost(
@@ -228,7 +230,14 @@ class MainActivity : ComponentActivity() {
                             }
                             Login(viewModel = viewModel)
                         }
-
+                        composable(
+                            Screen.Profile.route
+                        ){
+                            val viewModel = remember {
+                                ProfileViewModel(navController)
+                            }
+                            Profile(viewModel = viewModel)
+                        }
                     }
                 }
             }

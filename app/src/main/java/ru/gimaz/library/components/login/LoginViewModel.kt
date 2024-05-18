@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.gimaz.library.Screen
 import ru.gimaz.library.db.UserDao
 import ru.gimaz.library.enums.ProcessState
+import ru.gimaz.library.storage.UserStorage
 
 class LoginViewModel(
     private val navController: NavController,
@@ -39,6 +40,7 @@ class LoginViewModel(
                        val password = _password.value
                        val user = userDao.findByLoginAndPassword(login, password)
                        if (user != null) {
+                           UserStorage.user = user
                            _loginState.value = ProcessState.SUCCESS
                        } else {
                            _loginState.value = ProcessState.ERROR

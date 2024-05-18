@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.gimaz.library.BottomBar
+import ru.gimaz.library.storage.UserStorage
 import ru.gimaz.library.ui.cards.AuthorCard
 
 @Composable
@@ -59,19 +60,23 @@ fun Authors(viewModel: AuthorsViewModel) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     items(authors) {
-                        AuthorCard(it){
+                        AuthorCard(it) {
                             viewModel.handleIntent(AuthorsViewModel.Intent.OpenAuthor(it))
                         }
                     }
                 }
             }
-            FloatingActionButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(15.dp),
-                onClick = { viewModel.handleIntent(AuthorsViewModel.Intent.AddAuthor) },
-            ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+            UserStorage.user?.let {
+                if (it.isAdmin) {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(15.dp),
+                        onClick = { viewModel.handleIntent(AuthorsViewModel.Intent.AddAuthor) },
+                    ) {
+                        Icon(Icons.Filled.Add, "Floating action button.")
+                    }
+                }
             }
         }
     }

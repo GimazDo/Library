@@ -9,7 +9,7 @@ import androidx.room.Query
 
 @Entity
 data class User(
-    @PrimaryKey(autoGenerate = true) val id: Int? = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "first_name") val firstName: String,
     @ColumnInfo(name = "middle_name") val middleName: String? = null,
     @ColumnInfo(name = "last_name") val lastName: String,
@@ -28,6 +28,12 @@ interface UserDao {
 
     @Insert
     suspend fun insert(user: User)
+
+    @Query("SELECT * FROM user WHERE id = :id")
+    suspend fun getById(id: Int): User
+
+    @Query("SELECT * FROM user WHERE login = :login")
+    suspend fun getByLogin(login: String): User
 
     @Query("SELECT * FROM user WHERE login = :login AND password = :password")
     suspend fun findByLoginAndPassword(login: String, password: String): User?

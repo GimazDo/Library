@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.gimaz.library.BottomBar
+import ru.gimaz.library.storage.UserStorage
 import ru.gimaz.library.ui.cards.BookCard
 
 
@@ -66,13 +67,17 @@ fun Books(viewModel: BooksViewModel) {
                     }
                 }
             }
-            FloatingActionButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(15.dp),
-                onClick = { viewModel.handleIntent(BooksViewModel.Intent.AddBook) },
-            ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+            UserStorage.user?.let {
+                if(it.isAdmin){
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(15.dp),
+                        onClick = { viewModel.handleIntent(BooksViewModel.Intent.AddBook) },
+                    ) {
+                        Icon(Icons.Filled.Add, "Floating action button.")
+                    }
+                }
             }
         }
     }

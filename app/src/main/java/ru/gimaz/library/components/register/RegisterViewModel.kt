@@ -2,6 +2,7 @@ package ru.gimaz.library.components.register
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +13,7 @@ import ru.gimaz.library.Screen
 import ru.gimaz.library.db.User
 import ru.gimaz.library.db.UserDao
 import ru.gimaz.library.enums.ProcessState
+import ru.gimaz.library.storage.UserStorage
 import ru.gimaz.library.util.loadBitmapToFile
 
 class RegisterViewModel(
@@ -66,40 +68,14 @@ class RegisterViewModel(
             is Intent.EmailChanged -> _email.value = intent.email
             is Intent.PhotoUriChanged -> _photoUri.value = intent.photoUri
             is Intent.Register -> {
-                scope.launch {
-                    val firstName = _firstName.value
-                    val middleName = _middleName.value
-                    val lastName = _lastName.value
-                    val login = _login.value
-                    val password = _password.value
-                    val email = _email.value
-                    val photoUri = _photoUri.value
-                    if (photoUri != null) {
-                        val photoPath = loadBitmapToFile(photoUri, intent.context)
-                        val user = User(
-                            firstName = firstName,
-                            middleName = middleName,
-                            lastName = lastName,
-                            login = login,
-                            password = password,
-                            email = email,
-                            photoPath = photoPath
-                        )
-                        userDao.insert(user)
-                        _registerState.value = ProcessState.SUCCESS
-                    } else {
-                        val user = User(
-                            firstName = firstName,
-                            middleName = middleName,
-                            lastName = lastName,
-                            login = login,
-                            password = password,
-                            email = email,
-                        )
-                        userDao.insert(user)
-                        _registerState.value = ProcessState.SUCCESS
-                    }
-                }
+               scope.launch {
+                   try {
+                       saveUser(intent.context)
+                   } catch (e: Exception){
+                       Log.e("RegisterViewModel", "Error $e")
+                       _registerState.value = ProcessState.ERROR
+                   }
+               }
             }
 
             Intent.RegisterSuccess -> {
@@ -107,7 +83,46 @@ class RegisterViewModel(
             }
         }
     }
-
+    private suspend fun saveUser(context: Context) {
+            val firstName = _firstName.value
+            val middleName = _middleName.value
+            val lastName = _lastName.value
+            val login = _login.value
+            val password = _password.value
+            val email = _email.value
+            val photoUri = _photoUri.value
+            if (photoUri != null) {
+                val photoPath = loadBitmapToFile(photoUri, context)
+                val user = User(
+                    firstName = firstName,
+                    middleName = middleName,
+                    lastName = lastName,
+                    login = login,
+                    password = password,
+                    email = email,
+                    photoPath = photoPath,
+                    isAdmin = isFirstRegister.value
+                )
+                userDao.insert(user)
+                val newUser = userDao.getByLogin(login)
+                UserStorage.user = newUser
+                _registerState.value = ProcessState.SUCCESS
+            } else {
+                val user = User(
+                    firstName = firstName,
+                    middleName = middleName,
+                    lastName = lastName,
+                    login = login,
+                    password = password,
+                    email = email,
+                    isAdmin = isFirstRegister.value
+                )
+                userDao.insert(user)
+                val newUser = userDao.getByLogin(login)
+                UserStorage.user = newUser
+                _registerState.value = ProcessState.SUCCESS
+        }
+    }
     sealed class Intent {
         data class FirstNameChanged(val firstName: String) : Intent()
         data class MiddleNameChanged(val middleName: String) : Intent()
