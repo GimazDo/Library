@@ -53,13 +53,6 @@ fun Books(viewModel: BooksViewModel) {
                         modifier = Modifier.weight(1f),
                         placeholder = { Text(text = "Начните вводить для поиска") }
                     )
-                    IconButton(onClick = {
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null
-                        )
-                    }
                 }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),

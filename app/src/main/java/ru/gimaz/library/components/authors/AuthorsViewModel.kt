@@ -33,6 +33,9 @@ class AuthorsViewModel(
         when (intent) {
             is Intent.Search -> {
                 _searchFlow.value = intent.search
+                scope.launch {
+                    _authors.value = authorDao.search(intent.search)
+                }
             }
 
             Intent.AddAuthor -> {

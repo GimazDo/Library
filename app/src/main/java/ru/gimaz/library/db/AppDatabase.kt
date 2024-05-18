@@ -5,11 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [Author::class, Book::class, Publisher::class, User::class],
-    version = 6,
-    exportSchema = false
+    version = 10,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -20,22 +23,24 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun publisherDao(): PublisherDao
 
+    abstract fun userDao(): UserDao
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
-
-        fun getInstance(context: Context): AppDatabase {
+        fun getInstance(context: Context, scope: CoroutineScope): AppDatabase {
             return INSTANCE ?: synchronized(this) {
+                println("CREATE DATABASE")
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
+
 }

@@ -12,11 +12,9 @@ import ru.gimaz.library.db.Author
 import ru.gimaz.library.db.AuthorDao
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
-import ru.gimaz.library.util.loadBitmapAsByteArray
+import ru.gimaz.library.enums.ProcessState
 import ru.gimaz.library.util.loadBitmapToFile
 import java.time.LocalDate
-import java.util.UUID
 
 
 class AddAuthorViewModel(
@@ -47,7 +45,7 @@ class AddAuthorViewModel(
     val imagePath = _imagePath.asStateFlow()
 
 
-    private val _saveState = MutableStateFlow(SavingState.IDLE)
+    private val _saveState = MutableStateFlow(ProcessState.IDLE)
 
     val saveState = _saveState.asStateFlow()
 
@@ -152,7 +150,7 @@ class AddAuthorViewModel(
 
     private fun save(context: Context) {
         scope.launch {
-            _saveState.value = SavingState.LOADING
+            _saveState.value = ProcessState.LOADING
             val imageUri = _imageUri.value
             val firstname = _firstname.value
             val surname = _surname.value
@@ -172,7 +170,7 @@ class AddAuthorViewModel(
                             biography = biography
                         )
                     )
-                    _saveState.value = SavingState.SUCCESS
+                    _saveState.value = ProcessState.SUCCESS
                 }
             } else {
                 authorDao.insert(
@@ -184,14 +182,14 @@ class AddAuthorViewModel(
                         biography = biography
                     )
                 )
-                _saveState.value = SavingState.SUCCESS
+                _saveState.value = ProcessState.SUCCESS
             }
         }
     }
 
     private fun update(context: Context) {
         scope.launch {
-            _saveState.value = SavingState.LOADING
+            _saveState.value = ProcessState.LOADING
             val imageUri = _imageUri.value
             val firstname = _firstname.value
             val surname = _surname.value
@@ -214,7 +212,7 @@ class AddAuthorViewModel(
                             biography = biography
                         )
                     )
-                    _saveState.value = SavingState.SUCCESS
+                    _saveState.value = ProcessState.SUCCESS
                 }
             } else {
                 authorDao.update(
@@ -228,7 +226,7 @@ class AddAuthorViewModel(
                         photoPath = imagePath
                     )
                 )
-                _saveState.value = SavingState.SUCCESS
+                _saveState.value = ProcessState.SUCCESS
             }
         }
     }

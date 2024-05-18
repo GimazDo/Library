@@ -19,6 +19,9 @@ class PublishersViewModel(
         when(intent){
             is Intent.Search -> {
                 _searchFlow.value = intent.query
+                scope.launch {
+                    _publishersFlow.value = publisherDao.search(intent.query)
+                }
             }
 
             Intent.AddPublisher -> {

@@ -30,7 +30,7 @@ interface AuthorDao{
     @Insert
     suspend fun insert(author: Author)
 
-    @Query("SELECT * FROM author WHERE first_name LIKE :text OR last_name LIKE :text OR surname LIKE :text")
+    @Query("SELECT * FROM author WHERE first_name LIKE '%' || :text || '%' OR last_name LIKE '%' || :text || '%' OR surname LIKE '%' || :text || '%'")
     suspend fun search(text: String): List<Author>
 
 

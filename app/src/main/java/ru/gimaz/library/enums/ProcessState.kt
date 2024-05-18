@@ -1,6 +1,6 @@
 package ru.gimaz.library.enums
 
-enum class SavingState{
+enum class ProcessState{
     IDLE,
     LOADING,
     SUCCESS,

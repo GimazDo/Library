@@ -39,7 +39,7 @@ interface PublisherDao{
     suspend fun update(publisher: Publisher)
 
 
-    @Query("SELECT * FROM publisher WHERE name LIKE :text")
+    @Query("SELECT * FROM publisher WHERE name LIKE '%' || :text || '%'")
     suspend fun search(text: String): List<Publisher>
 
     @Delete

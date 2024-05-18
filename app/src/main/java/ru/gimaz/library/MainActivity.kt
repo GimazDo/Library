@@ -4,10 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
@@ -17,7 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,6 +35,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import ru.gimaz.library.components.addauthor.AddAuthor
 import ru.gimaz.library.components.addauthor.AddAuthorViewModel
 import ru.gimaz.library.components.addbook.AddBook
@@ -41,11 +51,21 @@ import ru.gimaz.library.components.book.Book
 import ru.gimaz.library.components.book.BookViewModel
 import ru.gimaz.library.components.books.Books
 import ru.gimaz.library.components.books.BooksViewModel
+import ru.gimaz.library.components.loading.AppLoading
+import ru.gimaz.library.components.loading.AppLoadingViewModel
+import ru.gimaz.library.components.login.Login
+import ru.gimaz.library.components.login.LoginViewModel
 import ru.gimaz.library.components.publisher.Publisher
 import ru.gimaz.library.components.publisher.PublisherViewModel
 import ru.gimaz.library.components.publishers.Publishers
 import ru.gimaz.library.components.publishers.PublishersViewModel
+import ru.gimaz.library.components.register.Register
+import ru.gimaz.library.components.register.RegisterViewModel
 import ru.gimaz.library.db.AppDatabase
+import ru.gimaz.library.ui.icons.LibraryIcons
+import ru.gimaz.library.ui.icons.libraryicons.Book
+import ru.gimaz.library.ui.icons.libraryicons.Publisher
+import ru.gimaz.library.ui.icons.libraryicons.Writer
 import ru.gimaz.library.ui.theme.LibraryTheme
 
 
@@ -54,18 +74,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             LibraryTheme {
+                val context = LocalContext.current
                 val navController = rememberNavController()
                 val db = remember {
-                    AppDatabase.getInstance(this)
+                    AppDatabase.getInstance(context, CoroutineScope(Dispatchers.IO))
                 }
                 Surface {
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Authors.route,
+                        startDestination = Screen.AppLoading.route,
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        composable(Screen.AddBook.route) {
+                        composable(Screen.AppLoading.route) {
+                            val viewModel = remember {
+                                AppLoadingViewModel(navController, db.userDao())
+                            }
+                            AppLoading(viewModel = viewModel)
+                        }
+                        composable(Screen.Register.route){
+                            val viewModel = remember {
+                                RegisterViewModel(navController, db.userDao())
+                            }
+                            Register(viewModel = viewModel)
                         }
                         composable(Screen.Publishers.route) {
                             val viewModel = remember {
@@ -189,6 +220,14 @@ class MainActivity : ComponentActivity() {
                             }
                             Author(viewModel = viewModel)
                         }
+                        composable(
+                            Screen.Login.route
+                        ) {
+                            val viewModel = remember {
+                                LoginViewModel(navController, db.userDao())
+                            }
+                            Login(viewModel = viewModel)
+                        }
 
                     }
                 }
@@ -198,6 +237,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomBar(navController: NavController) {
     NavigationBar {
@@ -205,8 +245,13 @@ fun BottomBar(navController: NavController) {
         val currentDestination = navBackStackEntry?.destination
         bottomBarItems.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = null) },
-                label = { Text(stringResource(item.resourceId)) },
+                icon = { Icon(item.icon, contentDescription = null, modifier = Modifier.size(30.dp)) },
+                label = { Text(stringResource(item.resourceId),
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.basicMarquee()
+                    ) },
                 selected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
                 onClick = {
                     navController.navigate(item.screen.route) {
@@ -241,6 +286,11 @@ sealed class Screen(val route: String, val routeForFormat: String? = null) {
     data object Publisher : Screen("publisher/{id}", "publisher/%s")
     data object Book : Screen("book/{id}", "book/%s")
     data object Author : Screen("author/{id}", "author/%s")
+    data object Login: Screen(route = "login")
+    data object Register: Screen(route = "register")
+    data object AppLoading: Screen(route = "appLoading")
+
+    data object Profile: Screen(route = "profile")
 }
 
 sealed class BottomBatItem(
@@ -248,16 +298,19 @@ sealed class BottomBatItem(
     @StringRes val resourceId: Int,
     val icon: ImageVector
 ) {
-    data object Books : BottomBatItem(Screen.Books, R.string.books_screen, Icons.Filled.Search)
+    data object Books : BottomBatItem(Screen.Books, R.string.books_screen, LibraryIcons.Book)
     data object Authors :
-        BottomBatItem(Screen.Authors, R.string.authors_screen, Icons.Filled.Search)
+        BottomBatItem(Screen.Authors, R.string.authors_screen, LibraryIcons.Writer)
 
     data object Publishers :
-        BottomBatItem(Screen.Publishers, R.string.publishers_screen, Icons.Filled.Search)
+        BottomBatItem(Screen.Publishers, R.string.publishers_screen, LibraryIcons.Publisher)
+
+    data object Profile: BottomBatItem(Screen.Profile,R.string.profile_screen, Icons.Default.AccountBox )
 }
 
 val bottomBarItems = listOf(
     BottomBatItem.Books,
     BottomBatItem.Authors,
-    BottomBatItem.Publishers
+    BottomBatItem.Publishers,
+    BottomBatItem.Profile
 )

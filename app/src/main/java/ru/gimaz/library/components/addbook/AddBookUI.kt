@@ -59,7 +59,7 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
+import ru.gimaz.library.enums.ProcessState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,15 +108,15 @@ fun AddBook(viewModel: AddBookViewModel) {
                     LoadingState.LOADED -> {
 
                         when (savingState) {
-                            SavingState.IDLE, SavingState.ERROR -> {
+                            ProcessState.IDLE, ProcessState.ERROR -> {
                                 AddBookForm(viewModel = viewModel)
                             }
 
-                            SavingState.LOADING -> {
+                            ProcessState.LOADING -> {
                                 CircularProgressIndicator()
                             }
 
-                            SavingState.SUCCESS -> {
+                            ProcessState.SUCCESS -> {
                                 LaunchedEffect(key1 = Unit) {
                                     viewModel.handleIntent(AddBookViewModel.Intent.Back)
                                 }
@@ -148,15 +148,15 @@ fun AddBook(viewModel: AddBookViewModel) {
                 }
             } else {
                 when (savingState) {
-                    SavingState.IDLE, SavingState.ERROR -> {
+                    ProcessState.IDLE, ProcessState.ERROR -> {
                         AddBookForm(viewModel = viewModel)
                     }
 
-                    SavingState.LOADING -> {
+                    ProcessState.LOADING -> {
                         CircularProgressIndicator()
                     }
 
-                    SavingState.SUCCESS -> {
+                    ProcessState.SUCCESS -> {
                         LaunchedEffect(key1 = Unit) {
                             viewModel.handleIntent(AddBookViewModel.Intent.Back)
                         }

@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
+import ru.gimaz.library.enums.ProcessState
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,15 +104,15 @@ fun AddAuthor(viewModel: AddAuthorViewModel) {
                     LoadingState.LOADED -> {
 
                         when (savingState) {
-                            SavingState.IDLE, SavingState.ERROR -> {
+                            ProcessState.IDLE, ProcessState.ERROR -> {
                                 Form(viewModel = viewModel)
                             }
 
-                            SavingState.LOADING -> {
+                            ProcessState.LOADING -> {
                                 CircularProgressIndicator()
                             }
 
-                            SavingState.SUCCESS -> {
+                            ProcessState.SUCCESS -> {
                                 LaunchedEffect(key1 = Unit) {
                                     viewModel.handleIntent(AddAuthorViewModel.Intent.Back)
                                 }
@@ -144,15 +144,15 @@ fun AddAuthor(viewModel: AddAuthorViewModel) {
                 }
             } else {
                 when (savingState) {
-                    SavingState.IDLE, SavingState.ERROR -> {
+                    ProcessState.IDLE, ProcessState.ERROR -> {
                         Form(viewModel = viewModel)
                     }
 
-                    SavingState.LOADING -> {
+                    ProcessState.LOADING -> {
                         CircularProgressIndicator()
                     }
 
-                    SavingState.SUCCESS -> {
+                    ProcessState.SUCCESS -> {
                         LaunchedEffect(key1 = Unit) {
                             viewModel.handleIntent(AddAuthorViewModel.Intent.Back)
                         }

@@ -16,11 +16,8 @@ import ru.gimaz.library.db.Publisher
 import ru.gimaz.library.db.PublisherDao
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
-import ru.gimaz.library.util.execute
-import ru.gimaz.library.util.loadBitmapAsByteArray
+import ru.gimaz.library.enums.ProcessState
 import ru.gimaz.library.util.loadBitmapToFile
-import java.util.UUID
 
 class AddBookViewModel(
     private val navController: NavController,
@@ -60,8 +57,8 @@ class AddBookViewModel(
     val publishers = _publishers.asStateFlow()
 
 
-    private val _savingState = MutableStateFlow(SavingState.IDLE)
-    val savingState = _savingState.asStateFlow()
+    private val _processState = MutableStateFlow(ProcessState.IDLE)
+    val savingState = _processState.asStateFlow()
 
     private val _isEditMode = MutableStateFlow(false)
     val isEditMode = _isEditMode.asStateFlow()
@@ -182,7 +179,7 @@ class AddBookViewModel(
 
     private fun update(context: Context) {
         scope.launch {
-            _savingState.value = SavingState.LOADING
+            _processState.value = ProcessState.LOADING
             val imageUri = imageUri.value
             val title = title.value
             val description = description.value
@@ -239,13 +236,13 @@ class AddBookViewModel(
                     )
                 )
             }
-            _savingState.value = SavingState.SUCCESS
+            _processState.value = ProcessState.SUCCESS
         }
     }
 
     private fun save(context: Context) {
         scope.launch {
-            _savingState.value = SavingState.LOADING
+            _processState.value = ProcessState.LOADING
             val imageUri = imageUri.value
             val title = title.value
             val description = description.value
@@ -255,22 +252,22 @@ class AddBookViewModel(
             val pages = pages.value
             if (author == null) {
                 _requiredFields.value = requiredFields.value.plus(RequiredField.AUTHOR)
-                _savingState.value = SavingState.ERROR
+                _processState.value = ProcessState.ERROR
                 return@launch
             }
             if (publisher == null) {
                 _requiredFields.value = requiredFields.value.plus(RequiredField.PUBLISHER)
-                _savingState.value = SavingState.ERROR
+                _processState.value = ProcessState.ERROR
                 return@launch
             }
             if (publishYear == null) {
                 _requiredFields.value = requiredFields.value.plus(RequiredField.PUBLISH_YEAR)
-                _savingState.value = SavingState.ERROR
+                _processState.value = ProcessState.ERROR
                 return@launch
             }
             if (pages == null) {
                 _requiredFields.value = requiredFields.value.plus(RequiredField.PAGES)
-                _savingState.value = SavingState.ERROR
+                _processState.value = ProcessState.ERROR
                 return@launch
             }
             if (imageUri != null) {
@@ -303,7 +300,7 @@ class AddBookViewModel(
                     )
                 )
             }
-            _savingState.value = SavingState.SUCCESS
+            _processState.value = ProcessState.SUCCESS
         }
     }
 

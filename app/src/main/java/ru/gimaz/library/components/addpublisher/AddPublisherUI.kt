@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
+import ru.gimaz.library.enums.ProcessState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,15 +100,15 @@ fun AddPublisher(viewModel: AddPublisherViewModel) {
                     LoadingState.LOADED -> {
 
                         when (savingState) {
-                            SavingState.IDLE, SavingState.ERROR -> {
+                            ProcessState.IDLE, ProcessState.ERROR -> {
                                 Form(viewModel = viewModel)
                             }
 
-                            SavingState.LOADING -> {
+                            ProcessState.LOADING -> {
                                 CircularProgressIndicator()
                             }
 
-                            SavingState.SUCCESS -> {
+                            ProcessState.SUCCESS -> {
                                 LaunchedEffect(key1 = Unit) {
                                     viewModel.handleIntent(AddPublisherViewModel.Intent.Back)
                                 }
@@ -140,15 +140,15 @@ fun AddPublisher(viewModel: AddPublisherViewModel) {
                 }
             } else {
                 when (savingState) {
-                    SavingState.IDLE, SavingState.ERROR -> {
+                    ProcessState.IDLE, ProcessState.ERROR -> {
                         Form(viewModel = viewModel)
                     }
 
-                    SavingState.LOADING -> {
+                    ProcessState.LOADING -> {
                         CircularProgressIndicator()
                     }
 
-                    SavingState.SUCCESS -> {
+                    ProcessState.SUCCESS -> {
                         LaunchedEffect(key1 = Unit) {
                             viewModel.handleIntent(AddPublisherViewModel.Intent.Back)
                         }
@@ -185,7 +185,7 @@ private fun Form(viewModel: AddPublisherViewModel) {
             .padding(top = 50.dp, start = 20.dp, end = 20.dp)
             .fillMaxWidth()
     ) {
-        if (savingState == SavingState.ERROR) {
+        if (savingState == ProcessState.ERROR) {
             Text(text = "Ошибка при сохранении")
             Spacer(modifier = Modifier.height(20.dp))
         }

@@ -5,5 +5,4 @@ enum class LoginState {
     LOADING,
     SUCCESS,
     ERROR
-
 }

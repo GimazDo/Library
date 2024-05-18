@@ -1,6 +1,5 @@
 package ru.gimaz.library.components.addpublisher
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.navigation.NavController
@@ -13,17 +12,15 @@ import ru.gimaz.library.db.Publisher
 import ru.gimaz.library.db.PublisherDao
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
-import ru.gimaz.library.enums.SavingState
-import ru.gimaz.library.util.loadBitmapAsByteArray
+import ru.gimaz.library.enums.ProcessState
 import ru.gimaz.library.util.loadBitmapToFile
-import java.util.UUID
 
 class AddPublisherViewModel(
     private val navController: NavController,
     private val publisherDao: PublisherDao,
     private val publisherId: Int? = null
 ) {
-    private val _saveState = MutableStateFlow(SavingState.IDLE)
+    private val _saveState = MutableStateFlow(ProcessState.IDLE)
 
     val saveState = _saveState.asStateFlow()
 
@@ -147,7 +144,7 @@ class AddPublisherViewModel(
 
     private fun update(context: Context) {
         scope.launch {
-            _saveState.value = SavingState.LOADING
+            _saveState.value = ProcessState.LOADING
             val name = _name.value
             val description = _description.value
             val address = _address.value
@@ -184,14 +181,14 @@ class AddPublisherViewModel(
                     )
                 )
             }
-            _saveState.value = SavingState.SUCCESS
+            _saveState.value = ProcessState.SUCCESS
         }
     }
 
 
     private fun save(context: Context) {
         scope.launch {
-            _saveState.value = SavingState.LOADING
+            _saveState.value = ProcessState.LOADING
             val name = _name.value
             val description = _description.value
             val address = _address.value
@@ -228,7 +225,7 @@ class AddPublisherViewModel(
                     )
                 )
             }
-            _saveState.value = SavingState.SUCCESS
+            _saveState.value = ProcessState.SUCCESS
         }
     }
 

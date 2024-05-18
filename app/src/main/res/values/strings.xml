@@ -5,4 +5,5 @@
     <string name="books_screen">Книги</string>
     <string name="authors_screen">Авторы</string>
     <string name="publishers_screen">Издательства</string>
+    <string name="profile_screen">Профиль</string>
 </resources>

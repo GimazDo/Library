@@ -9,15 +9,15 @@ import androidx.room.Query
 
 @Entity
 data class User(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int? = 0,
     @ColumnInfo(name = "first_name") val firstName: String,
-    @ColumnInfo(name = "middle_name") val middleName: String,
+    @ColumnInfo(name = "middle_name") val middleName: String? = null,
     @ColumnInfo(name = "last_name") val lastName: String,
     @ColumnInfo(name = "login") val login: String,
     @ColumnInfo(name = "password") val password: String,
     @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "photo_path") val photoPath: String,
-    @ColumnInfo(name = "is_admin") val isAdmin: Boolean,
+    @ColumnInfo(name = "photo_path") val photoPath: String? = null,
+    @ColumnInfo(name = "is_admin") val isAdmin: Boolean = false,
 )
 
 

@@ -36,6 +36,9 @@ class BooksViewModel(
             }
             is Intent.Search -> {
                 _searchFlow.value = intent.query
+                scope.launch {
+                    _books.value = bookDao.search(intent.query)
+                }
             }
 
             is Intent.OpenBook -> {

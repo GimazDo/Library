@@ -48,4 +48,7 @@ interface BookDao {
     suspend fun delete(book: Book)
     @Query("SELECT * FROM book WHERE author_id = :authorId")
     fun getByAuthorId(authorId: Int): List<Book>
+
+    @Query("SELECT * FROM book WHERE title LIKE '%' || :query || '%'")
+    fun search(query: String): List<Book>
 }
