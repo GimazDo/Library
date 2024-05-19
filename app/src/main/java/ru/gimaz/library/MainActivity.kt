@@ -63,6 +63,8 @@ import ru.gimaz.library.components.publishers.Publishers
 import ru.gimaz.library.components.publishers.PublishersViewModel
 import ru.gimaz.library.components.register.Register
 import ru.gimaz.library.components.register.RegisterViewModel
+import ru.gimaz.library.components.users.Users
+import ru.gimaz.library.components.users.UsersViewModel
 import ru.gimaz.library.db.AppDatabase
 import ru.gimaz.library.ui.icons.LibraryIcons
 import ru.gimaz.library.ui.icons.libraryicons.Book
@@ -193,7 +195,8 @@ class MainActivity : ComponentActivity() {
                                     bookId ?: -1,
                                     db.bookDao(),
                                     db.authorDao(),
-                                    db.publisherDao()
+                                    db.publisherDao(),
+                                    db.userBookReadDao()
                                 )
                             }
                             Book(viewModel)
@@ -234,9 +237,17 @@ class MainActivity : ComponentActivity() {
                             Screen.Profile.route
                         ){
                             val viewModel = remember {
-                                ProfileViewModel(navController)
+                                ProfileViewModel(navController, db.bookDao() , db.userBookReadDao())
                             }
                             Profile(viewModel = viewModel)
+                        }
+                        composable(
+                            Screen.Users.route
+                        ){
+                            val viewModel = remember {
+                                UsersViewModel(navController, db.userDao())
+                            }
+                            Users(viewModel = viewModel)
                         }
                     }
                 }
@@ -300,6 +311,8 @@ sealed class Screen(val route: String, val routeForFormat: String? = null) {
     data object AppLoading: Screen(route = "appLoading")
 
     data object Profile: Screen(route = "profile")
+
+    data object Users: Screen(route = "users")
 }
 
 sealed class BottomBatItem(

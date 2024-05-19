@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [Author::class, Book::class, Publisher::class, User::class],
+    entities = [Author::class, Book::class, Publisher::class, User::class, UserBookRead::class],
     version = 10,
 )
 @TypeConverters(Converters::class)
@@ -24,6 +24,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun publisherDao(): PublisherDao
 
     abstract fun userDao(): UserDao
+
+    abstract fun userBookReadDao(): UserBookReadDao
 
     companion object {
         @Volatile

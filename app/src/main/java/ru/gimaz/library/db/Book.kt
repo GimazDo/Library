@@ -41,6 +41,9 @@ interface BookDao {
     @Query("SELECT * FROM book WHERE id = :bookId")
     suspend fun getBookById(bookId: Int): Book?
 
+    @Query("SELECT * FROM book WHERE id IN (:bookIds)")
+    suspend fun getBooksByIds(bookIds: List<Int>): List<Book>
+
     @Update
     suspend fun update(book: Book)
 

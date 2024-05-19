@@ -13,15 +13,19 @@ import ru.gimaz.library.db.Book
 import ru.gimaz.library.db.BookDao
 import ru.gimaz.library.db.Publisher
 import ru.gimaz.library.db.PublisherDao
+import ru.gimaz.library.db.UserBookRead
+import ru.gimaz.library.db.UserBookReadDao
 import ru.gimaz.library.enums.LoadingObjectError
 import ru.gimaz.library.enums.LoadingState
+import ru.gimaz.library.storage.UserStorage
 
 class BookViewModel(
     private val navController: NavController,
     private val bookId: Int,
     private val bookDao: BookDao,
     private val authorDao: AuthorDao,
-    private val publisherDao: PublisherDao
+    private val publisherDao: PublisherDao,
+    private val userBookReadDao: UserBookReadDao
 ) {
 
     private val _book = MutableStateFlow<Book?>(null)
@@ -40,6 +44,8 @@ class BookViewModel(
     private val _author = MutableStateFlow<Author?>(null)
     val author = _author.asStateFlow()
 
+    private val _isRead = MutableStateFlow(false)
+    val isRead = _isRead.asStateFlow()
 
     init {
         scope.launch {
@@ -58,6 +64,12 @@ class BookViewModel(
             } catch (e: Exception) {
                 _loadingState.value = LoadingState.ERROR
                 _objectErrorState.value = LoadingObjectError.INTERNAL_ERROR
+            }
+        }
+        scope.launch {
+            val userBookRead = userBookReadDao.getByUserIdAndBookId(UserStorage.user!!.id!!, bookId)
+            if (userBookRead != null) {
+                _isRead.value = true
             }
         }
     }
@@ -87,6 +99,7 @@ class BookViewModel(
                     )
                 )
             }
+
             Intent.OpenPublisher -> {
                 navController.navigate(
                     String.format(
@@ -94,6 +107,16 @@ class BookViewModel(
                         publisher.value!!.id
                     )
                 )
+            }
+
+            Intent.MarkRead -> scope.launch {
+                if (_isRead.value) {
+                    userBookReadDao.delete(UserStorage.user!!.id!!, bookId)
+                    _isRead.value = false
+                } else {
+                    userBookReadDao.insert(UserBookRead(UserStorage.user!!.id!!, bookId))
+                    _isRead.value = true
+                }
             }
         }
     }
@@ -105,5 +128,6 @@ class BookViewModel(
         data object Delete : Intent()
         data object OpenAuthor : Intent()
         data object OpenPublisher : Intent()
+        data object MarkRead : Intent()
     }
 }

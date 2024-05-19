@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Update
 
 @Entity
 data class User(
@@ -37,6 +38,8 @@ interface UserDao {
 
     @Query("SELECT * FROM user WHERE login = :login AND password = :password")
     suspend fun findByLoginAndPassword(login: String, password: String): User?
+    @Update
+    fun update(user: User)
 
 
 }
@@ -58,4 +61,7 @@ interface UserBookReadDao {
 
     @Query("SELECT * FROM userbookread WHERE user_id = :userId")
     suspend fun getByUserId(userId: Int): List<UserBookRead>
+
+    @Query("SELECT * FROM userbookread WHERE user_id = :userId AND book_id = :bookId")
+    suspend fun getByUserIdAndBookId(userId: Int, bookId: Int): UserBookRead?
 }

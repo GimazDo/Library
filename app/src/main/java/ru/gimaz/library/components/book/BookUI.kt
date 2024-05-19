@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -58,6 +59,7 @@ fun Book(viewModel: BookViewModel) {
     var showDeleteAlert by remember {
         mutableStateOf(false)
     }
+    val isRead by viewModel.isRead.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,6 +81,10 @@ fun Book(viewModel: BookViewModel) {
                     }
                     IconButton(onClick = { showDeleteAlert = true }) {
                         Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                    }
+                    IconButton(onClick = { viewModel.handleIntent(BookViewModel.Intent.MarkRead) }) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null,
+                            tint = if (isRead) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
                     }
                 }
             )

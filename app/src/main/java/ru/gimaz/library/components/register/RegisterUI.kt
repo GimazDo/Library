@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -267,6 +268,7 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Password
                 ),
+                visualTransformation = PasswordVisualTransformation(),
                 supportingText = {
                     if (requiredFields.contains(RegisterViewModel.RequiredField.PASSWORD)) {
                         Text(
@@ -289,9 +291,10 @@ private fun RegisterForm(viewModel: RegisterViewModel) {
                     Text(text = "Повторите пароль")
                 },
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
+                    imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Password
                 ),
+                visualTransformation = PasswordVisualTransformation(),
                 supportingText = {
                     if (requiredFields.contains(RegisterViewModel.RequiredField.PASSWORD)) {
                         Text(
